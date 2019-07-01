@@ -1,0 +1,32 @@
+{
+  "name": "patchbeak",
+  "version": "0.0.1",
+  "description": "Patch an `Array` subject to `map`, `filter`, `find`, etc.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run clean && tsc -p . --p tsconfig.test.json && jest --no-cache",
+    "coverage": "npm run clean && tsc -p . --p tsconfig.test.json && jest --no-cache --coverage",
+    "clean": "rm -rf dist coverage",
+    "tsc": "tsc",
+    "compile": "npm run clean && tsc -p .",
+    "prepublishOnly": "npm run test && npm run compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wernerdegroot/patchbeak.git"
+  },
+  "keywords": [
+    "patch"
+  ],
+  "author": "Werner de Groot",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wernerdegroot/patchbeak/issues"
+  },
+  "homepage": "https://github.com/wernerdegroot/patchbeak#readme",
+  "devDependencies": {
+    "@types/jest": "^24.0.15",
+    "jest": "^24.8.0",
+    "typescript": "^3.5.2"
+  }
+}
