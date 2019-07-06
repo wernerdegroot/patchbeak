@@ -1,23 +1,28 @@
 import { Generator } from './Generator'
 import { Patch, PatchType } from '../Patch'
 import { createNumberGenerator } from './createNumberGenerator'
+import { createGeneratorFrom } from './createGeneratorFrom'
 
 export function createPatchGenerator<T>(length: number, generator: Generator<T>): Generator<Patch<T>> {
   return (): Patch<T> => {
     const indexGenerator = createNumberGenerator(0, length)
-    const typeGenerator = createNumberGenerator(0, 4)
+    const typeGenerator =
+      length <= 0
+        ? createGeneratorFrom<PatchType>([PatchType.NoOp, PatchType.Insert])
+        : createGeneratorFrom<PatchType>([PatchType.NoOp, PatchType.Insert, PatchType.Remove, PatchType.Update])
     const type = typeGenerator()
     switch (type) {
-      case 0:
+      case PatchType.Insert:
         return { type: PatchType.Insert, index: indexGenerator(), value: generator() }
-      case 1:
+      case PatchType.Remove:
         return { type: PatchType.Remove, index: indexGenerator() }
-      case 2:
+      case PatchType.Update:
         return { type: PatchType.Update, index: indexGenerator(), value: generator() }
-      case 3:
+      case PatchType.NoOp:
         return { type: PatchType.NoOp }
       default:
-        throw new Error('Unknown type')
+        const exhaustive: never = type
+        throw new Error(`Unknown type ${exhaustive}`)
     }
   }
 }
