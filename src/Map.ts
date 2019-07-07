@@ -31,6 +31,13 @@ export function consolidateRegistry<T>(registry: Registry<T>): Registry<T> {
   return { mappedValues: Lazy.from(mappedValues), patches: [] }
 }
 
+export function map<T, U>(arr: T[], fn: (t: T) => U): Registry<U> {
+  return {
+    mappedValues: Lazy.create(() => arr.map(fn)),
+    patches: []
+  }
+}
+
 export function processPatch<From, To>(previousRegistry: Registry<To>, patch: Patch<From>, fn: (from: From) => To): [Registry<To>, Patch<To>] {
   switch (patch.type) {
     case PatchType.NoOp: {
