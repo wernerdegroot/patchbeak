@@ -1,6 +1,6 @@
-import { createArrayGenerator } from './createArrayGenerator'
-import { createNumberGenerator } from './createNumberGenerator'
-import { createPatchesGenerator } from './createPatchesGenerator'
+import { createArrayGenerator } from '../generate/createArrayGenerator'
+import { createNumberGenerator } from '../generate/createNumberGenerator'
+import { createPatchesGenerator } from '../generate/createPatchesGenerator'
 import { Patch } from '../Patch'
 import { processPatch, consolidateRegistry, map } from '../Map'
 import { repeat } from './repeat'
@@ -19,13 +19,13 @@ describe('map', () => {
     repeat(100, () => {
       const array = arrayGenerator()
       const patches = patchesGenerator()
-      const arrayWithPatches = patches.reduce((acc, curr) => Patch.apply(acc, curr), array)
+      const arrayWithPatches = patches.reduce((acc, curr) => Patch.applyImmutable(acc, curr), array)
       const fn = (n: number): string => String(n) + '!'
       const mappedArrayWithPatches = arrayWithPatches.map(fn)
 
       const initialRegistry = map(array, fn)
       const registry = patches.reduce((acc, curr) => {
-        const [registry] = processPatch(acc, curr, fn)
+        const [registry] = processPatch(acc, curr)
         return registry
       }, initialRegistry)
       const consolidatedRegistry = consolidateRegistry(registry)
@@ -44,13 +44,13 @@ describe('map', () => {
 
       const initialRegistry = map(array, fn)
       const finalRegistry = firstPatches.reduce((acc, curr) => {
-        const [registry] = processPatch(acc, curr, fn)
+        const [registry] = processPatch(acc, curr)
         return registry
       }, initialRegistry)
       const consolidatedFinalRegistry = consolidateRegistry(finalRegistry)
 
-      const [, toVerify] = processPatch(finalRegistry, lastPatch, fn)
-      const [, expected] = processPatch(consolidatedFinalRegistry, lastPatch, fn)
+      const [, toVerify] = processPatch(finalRegistry, lastPatch)
+      const [, expected] = processPatch(consolidatedFinalRegistry, lastPatch)
       expect({ array, patches, value: toVerify }).toEqual({ array, patches, value: expected })
     })
   )

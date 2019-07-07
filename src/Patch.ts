@@ -44,17 +44,16 @@ export const Patch = {
         throw new Error(`Unknown patch ${exhaustive}`)
     }
   },
-  apply<T>(arr: T[], patch: Patch<T>): T[] {
-    const result = arr.slice(0)
+  applyMutable<T>(arr: T[], patch: Patch<T>): T[] {
     switch (patch.type) {
       case PatchType.Insert:
-        result.splice(patch.index, 0, patch.value)
+        arr.splice(patch.index, 0, patch.value)
         break
       case PatchType.Remove:
-        result.splice(patch.index, 1)
+        arr.splice(patch.index, 1)
         break
       case PatchType.Update:
-        result[patch.index] = patch.value
+        arr[patch.index] = patch.value
         break
       case PatchType.NoOp:
         break
@@ -62,6 +61,11 @@ export const Patch = {
         const exhaustive: never = patch
         throw new Error(`Unknown patch ${exhaustive}`)
     }
+    return arr
+  },
+  applyImmutable<T>(arr: T[], patch: Patch<T>): T[] {
+    const result = arr.slice(0)
+    Patch.applyMutable(arr, patch)
     return result
   }
 }
